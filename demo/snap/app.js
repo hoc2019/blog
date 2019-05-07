@@ -1,6 +1,5 @@
 const imageBox = document.querySelector('#image');
 const image = document.querySelector('#image img');
-const color = document.querySelector('.color');
 const mystatus = document.querySelector('#mystatus');
 const btn = document.querySelector('#btn');
 let isPlay = false;
@@ -61,7 +60,6 @@ function beginDetect() {
 
 function start() {
     image.classList.remove('quickFade');
-    color.style.background = 'green';
     snap(imageBox);
 }
 const snap = target => {

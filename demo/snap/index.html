@@ -17,28 +17,23 @@
                 align-items: center;
                 overflow: hidden;
             }
-
             .content {
                 position: relative;
-            }
-            .color {
-                width: 5px;
-                height: 5px;
-                background: red;
-                position: absolute;
-                top: 0;
-                left: 0;
             }
             .tips {
                 position: absolute;
                 left: 0;
                 top: 0;
             }
+            .btn {
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
             #image {
                 min-width: 470px;
                 min-height: 479px;
             }
-
             #start-btn {
                 cursor: pointer;
                 position: absolute;
@@ -54,7 +49,6 @@
                 background-size: 50px;
                 z-index: 30;
             }
-
             .dust {
                 position: absolute;
                 top: 0;
@@ -62,15 +56,12 @@
                 z-index: 1;
                 filter: blur(0.05em);
             }
-
             .quickFade {
                 animation: fadeout 1.5s linear forwards;
             }
-
             .fade {
                 animation: fadeout 2s linear forwards;
             }
-
             @keyframes fadeout {
                 0% {
                     opacity: 1;
@@ -79,11 +70,9 @@
                     opacity: 0;
                 }
             }
-
             .blur {
                 animation: fadeblur 2s ease-in forwards;
             }
-
             @keyframes fadeblur {
                 0% {
                     opacity: 1;
@@ -99,13 +88,13 @@
         </style>
     </head>
     <body>
-        <div class="color"></div>
         <div class="tips" id="mystatus"></div>
-        <button id="btn">点击打响指</button>
+        <button class="btn" id="btn">点击打响指</button>
         <div class="content">
             <div id="image">
+                <!-- <img src="./ball.jpg" width="400" /> -->
                 <img
-                    src="http://pic32.nipic.com/20130904/10570451_210200556001_2.png"
+                    src="https://i.loli.net/2019/05/06/5ccffa469ec52.jpg"
                     width="400"
                 />
             </div>
