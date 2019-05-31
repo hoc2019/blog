@@ -274,3 +274,17 @@ var a = (0, _from["default"])([1]);
 
 话说已经很明白了，该用哪种形式是看开发的是一个类库还是系统项目了，不过通常对于一般项目来说plugin-transform-runtime处理工具函数，babel-polyfill处理兼容。
 
+## 最后总结
+| 包名                            | 功能                       | 说明                                                                       |
+| ------------------------------- | -------------------------- | -------------------------------------------------------------------------- |
+| @babel/core                     | babel编译核心包            | 必装开发依赖                                                               |
+| @babel/cli                      | 命令行执行babel命令工具    | 非必装开发依赖，packages.json的script中使用了babel命令则需安装             |
+| babel-loader                    | webpack中使用babel加载文件 | 非必装开发依赖，webpack项目中使用                                          |
+| @babel/plugin-*                 | babel编译功能实现插件      | 开发依赖，按照需要的功能安装                                               |
+| @babel/preset-*                 | 功能实现插件预设           | 开发依赖，按照需要的功能安装，js语言新特性转换推荐使用preset-env           |
+| @babel/plugin-transform-runtime | 复用工具函数               | 非必装开发依赖，和@babel/runtime同时存在                                   |
+| @babel/runtime                  | 工具函数库                 | 非必装生产依赖，和@babel/plugin-transform-runtime同时存在                  |
+| @babel/polyfill                 | 低版本浏览器兼容库         | 非必装生产依赖，已不推荐使用，推荐通过preset-env的useBuiltIns属性按需引入  |
+| core-js                         | 低版本浏览器兼容库         | 非必装生产依赖，通过preset-env引入polyfill需安装此包，并通过corejs指定版本 |
+babel使用的相关内容基本就这些了，至于babel编译内部实现原理感兴趣的可以深入研究，也可以自己写一些babel的plugins和preset发布到npm上供大家使用。
+ 
