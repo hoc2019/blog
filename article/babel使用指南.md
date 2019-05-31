@@ -210,8 +210,8 @@ module.exports = {
         [
             '@babel/preset-env',
             {
-                useBuiltIns: 'usage', 
-                corejs: 3 //
+                useBuiltIns: 'usage', // usage-按需引入 entry-入口引入（整体引入） false-不引入polyfill
+                corejs: 2 
             }
         ]
     ],
