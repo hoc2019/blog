@@ -293,7 +293,7 @@ var a = (0, _from["default"])([1]);
 
 经过我的测试，除了实例上的方法如Array.prototype.includes这种的，其它之前提到的内置函数（Promise,Set,Map），静态方法（Array.from,Object.assign）都可以采用plugin-transform-runtime的这种形式。 
 
-然后我就想，既然这种形式不会污染变量，那当然能用就用这种了，但是群里问了一下后，大佬们给出了一个看法（感谢justjavac和小时哥的说明）。
+然后我就想，既然这种形式不会污染变量，那当然能用就用这种了，但是群里问了一下后，大佬们给出了一个看法（感谢大佬justjavac和小时哥的说明）。
 >runtime 不污染全局变量，但是会导致多个文件出现重复代码。   
 >写类库的时候用runtime，系统项目还是用polyfill。   
 >写库使用 runtime 最安全，如果我们使用了 includes，但是我们的依赖库 B 也定义了这个函数，这时我们全局引入 polyfill 就会出问题：覆盖掉了依赖库 B 的 includes。如果用 runtime 就安全了，会默认创建一个沙盒,这种情况 Promise 尤其明显，很多库会依赖于 bluebird 或者其他的 Promise 实现,一般写库的时候不应该提供任何的 polyfill 方案，而是在使用手册中说明用到了哪些新特性，让使用者自己去 polyfill。   
