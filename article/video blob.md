@@ -86,7 +86,7 @@ blob:http://localhost:1234/abcedfgh-1234-1234-1234-abcdefghijkl
 
 >Tips: 值得注意的是如果是以文件协议打开的html文件（即url为file://开头），则地址中http://localhost:1234会变成null，而且此时这个blob地址是无法直接访问的。
 
-## 实战：上传图片预览
+## 实战一：上传图片预览
 
 有时我们通过input上传图片文件之前，会希望可以预览一下图片，这个时候就可以通过前面所学到的东西实现，而且非常简单。
 
@@ -102,12 +102,42 @@ const upload = document.querySelector("#upload");
 const preview = document.querySelector("#preview");
 
 upload.onchange = function() {
-  const file = fileBtn.files[0];
-  const src = URL.createObjectURL(file);
+  const file = fileBtn.files[0]; //File对象
+  const src = URL.createObjectURL(file); 
   preview.src = src;
 };
 ```
 
 这样一个图片上传预览就实现了，是不是非常简单，同样的这个方法也适用于上传视频的预览。
+
+## 实战二：以blob地址加载网络视频
+
+现在我们有一个网络视频的地址，怎么能将这个视频地址变成blob形式呢，思路肯定是先要拿到存储这个视频原始数据的Blob对象，但是不同于input上传可以直接拿到File对象，我们只有一个网络地址。
+
+我们知道平时请求接口我们可以使用xhr（jquery里的ajax和axios就是封装的这个）或fetch，请求一个服务端地址可以返回我们相应的数据，那如果我们用xhr或者fetch去请求一个图片或视频地址会返回什么呢？当然是返回图片和视频的数据，只不过要设置正确responseType才能拿到我们想要的格式数据。
+
+```javascript
+function ajax(url, cb) {
+  const xhr = new XMLHttpRequest();
+  xhr.open("get", url);
+  xhr.responseType = "blob"; // ""|"text"-字符串（所以我们会拿到一堆乱码字符串） "blob"-Blob对象 "arraybuffer"-ArrayBuffer对象
+  xhr.onload = function() {
+    cb(xhr.response);
+  };
+  xhr.send();
+}
+```
+
+看到responseType可以设置blob和arraybuffer我们应该就有谱了，请求直接返回一个Blob对象或者返回ArrayBuffer对象后转换成blob，然后通过createObjectURL生成地址赋值给视频的src属性就可以了,这里我们直接请求一个Blob对象。
+
+```javascript
+ajax('video.mp4', function(res){
+    const src = URL.createObjectURL(res); 
+    video.src = src;
+})
+```
+
+也挺简单，用调试工具查看视频标签的src属性已经变成一个blob地址，表面上看已经和各大视频网站一样了。但实际上存在两个问题，一是这个blob地址是可以直接访问和下载的，这就很扯淡了，使用blob地址有一个原因就是可以防盗链，各大视频网站可是不能的，二是这种形式要等到请求完全部视频数据才能播放，小视频还好说，要是一个视频资源大一点岂不炸了。
+
 
 
