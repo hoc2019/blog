@@ -14,7 +14,7 @@
 
 我们都知道计算机中的数据是用二进制的方式存储的，所以我们的图片，音视频等，也可以直接以二进制的形式存储，早期数据库就常常用Blob来存储这些二进制数据对象。在web领域，Blob对象表示一个只读原始数据的类文件对象，虽然是二进制原始数据但是类似文件对象，因此可以像操作File对象一样操作Blob对象，实际上，File继承自Blob。
 
-ArrayBuffer对象用来表示通用的、固定长度的原始二进制数据缓冲区。ArrayBuffer是不可以直接操作的，而是要通过类型数组对象或 DataView 对象来操作，它们会将缓冲区中的数据表示为特定的格式，并通过这些格式来读写缓冲区的内容，Blob可以和ArrayBuffer互相转换。
+ArrayBuffer对象用来表示通用的、固定长度的原始二进制数据缓冲区（其实就是内存），它不能直接读写，只能通过视图（TypedArray视图和DataView视图)来读写，视图的作用是以指定格式解读二进制数据。Blob可以和ArrayBuffer互相转换。
 
 类型数组对象有以下几个:
 
@@ -32,8 +32,8 @@ ArrayBuffer对象用来表示通用的、固定长度的原始二进制数据缓
 
 ```javascript
 //创建一个以二进制数据存储的html文件
-const text = '<div>hello world</div>';
-const blob = new Blob([text], { type: 'text/html' }); // Blob {size: 22, type: "text/html"}
+const text = "<div>hello world</div>";
+const blob = new Blob([text], { type: "text/html" }); // Blob {size: 22, type: "text/html"}
 //以文本读取
 const textReader = new FileReader();
 textReader.readAsText(blob);
@@ -52,8 +52,8 @@ bufReader.onload = function() {
 
 ```javascript
 //我们直接创建一个Uint8Array并填入上面的数据
-const u8Buf = new Uint8Array([60, 100, 105, 118, 62, 104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 60, 47, 100, 105, 118, 62]); 
-const u8Blob = new Blob([u8Buf],{ type: 'text/html' }) // Blob {size: 22, type: "text/html"}
+const u8Buf = new Uint8Array([60, 100, 105, 118, 62, 104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 60, 47, 100, 105, 118, 62]);
+const u8Blob = new Blob([u8Buf], { type: "text/html" }); // Blob {size: 22, type: "text/html"}
 const textReader = new FileReader();
 
 textReader.readAsArrayBuffer(u8Blob);
@@ -61,5 +61,53 @@ textReader.onload = function() {
   console.log(textReader.result); // 同样得到div>hello world</div>
 };
 ```
+
+更多Blob和ArrayBuffer的相关内容可以参看下面的资料：
+- [MDN Blob](https://developer.mozilla.org/zh-CN/docs/Web/API/Blob)
+- [MDN ArrayBuffer](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
+- [阮一峰js标准参考教程二进制数组](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
+
+
+## URL.createObjectURL()
+
+video标签，audio标签还是img标签的src属性，不管是相对路径，绝对路径，或者一个网络地址，归根结底都是指向一个文件资源的地址。既然我们知道了Blob其实是一个可以当作文件用的二进制数据，那么只要我们可以生成一个指向Blob的地址，是不是就可以用在这些标签的src属性上，答案肯定是可以的，这里我们要用到的就是URL.createObjectURL()。
+
+```javascript
+const objectURL = URL.createObjectURL(object);
+```
+
+这里的object是用于创建URL的File对象、Blob 对象或者 MediaSource 对象，生成的链接就是以blob:开头的一段地址，表示指向的是一个Blob对象：
+
+```shell
+blob:http://localhost:1234/abcedfgh-1234-1234-1234-abcdefghijkl
+```
+
+上面地址中的localhost:1234是当前URL的主机名称和端口号，也就是location.host，而且这个blob地址是可以直接访问的。
+
+>Tips: 值得注意的是如果是以文件协议打开的html文件（即url为file://开头），则地址中http://localhost:1234会变成null，而且此时这个blob地址是无法直接访问的。
+
+## 实战：上传图片预览
+
+有时我们通过input上传图片文件之前，会希望可以预览一下图片，这个时候就可以通过前面所学到的东西实现，而且非常简单。
+
+html
+```html
+<input id="upload" type="file" />
+<img id="preview" src="" alt="预览"/>
+```
+
+javascript
+```javascript
+const upload = document.querySelector("#upload");
+const preview = document.querySelector("#preview");
+
+upload.onchange = function() {
+  const file = fileBtn.files[0];
+  const src = URL.createObjectURL(file);
+  preview.src = src;
+};
+```
+
+这样一个图片上传预览就实现了，是不是非常简单，同样的这个方法也适用于上传视频的预览。
 
 
