@@ -1,22 +1,22 @@
-自从HTML5提供了video标签，在网页中播放视频已经变成一个非常简单的事，只要一个video标签，src属性设置为视频的地址就完事了。但以为这里暴露了真实的视频网络地址，所以在早期一般网站的资源文件不怎么通过referer设置防盗链，所以当我们拿到视频的地址后可以随意的下载或使用（当年每次放假回家，就会有亲戚找我帮忙从一些视频网站上下东西）。   
+自从HTML5提供了video标签，在网页中播放视频已经变成一个非常简单的事，只要一个video标签，src属性设置为视频的地址就完事了。由于src指向真实的视频网络地址，在早期一般网站资源文件不怎么通过referer设置防盗链，当我们拿到视频的地址后可以随意的下载或使用（每次放假回家，就会有亲戚找我帮忙从一些视频网站上下东西）。   
 
 > Tips：目前的云存储服务商大部分都支持referer防盗链。其原理就是在访问资源时，请求头会带上发起请求的页面地址，判断其不存在（表示直接访问图片地址）或不在白名单内，即为盗链。
 
-可是从某个时间开始我们打开调试工具去看各大视频网站的src会发现，它们统统变成了这样的形式。
+可是从某个时间开始我们打开调试工具去看各大视频网站的视频src会发现，它们统统变成了这样的形式。
 
 ![](./image/blob.png)
 
 拿b站的一个视频来看，红框中的视频地址，这个blob是个什么东西？。
 
-其实这个Blob URL也不是什么新技术，国内外出来都有一阵子了，但是网上的相关的文章不多也不是很详细，今天就和大家一起分享学习一下，说不定哪天项目就能用上。
+其实这个Blob URL也不是什么新技术，国内外出来都有一阵子了，但是网上的相关的文章不多也不是很详细，今天就和大家一起分享学习一下。
 
 ## Blob和ArrayBuffer
 
-我们都知道计算机中的数据是用二进制的方式存储的，所以我们的图片，音视频等，也可以直接以二进制的形式存储，早期数据库就常常用Blob来存储这些二进制数据对象。在web领域，Blob对象表示一个只读原始数据的类文件对象，虽然是二进制原始数据但是类似文件对象，因此可以像操作File对象一样操作Blob对象，实际上，File继承自Blob。
+最早是数据库直接用Blob来存储二进制数据对象，这样就不用关注存储数据的格式了。在web领域，Blob对象表示一个只读原始数据的类文件对象，虽然是二进制原始数据但是类似文件的对象，因此可以像操作文件对象一样操作Blob对象。
 
-ArrayBuffer对象用来表示通用的、固定长度的原始二进制数据缓冲区（其实就是内存），它不能直接读写，只能通过视图（TypedArray视图和DataView视图)来读写，视图的作用是以指定格式解读二进制数据。Blob可以和ArrayBuffer互相转换。
+ArrayBuffer对象用来表示通用的、固定长度的原始二进制数据缓冲区。我们可以通过new ArrayBuffer(length)来获得一片连续的内存空间，它不能直接读写，但可根据需要将其传递到TypedArray视图或 DataView 对象来解释原始缓冲区。实际上视图只是给你提供了一个某种类型的读写接口，让你可以操作ArrayBuffer里的数据。TypeArray需指定一个数组类型来保证数组成员都是同一个数据类型，而DataView数组成员可以是不同的数据类型。
 
-类型数组对象有以下几个:
+TypedArray视图的类型数组对象有以下几个:
 
 - Int8Array：8位有符号整数，长度1个字节。
 - Uint8Array：8位无符号整数，长度1个字节。
@@ -27,6 +27,10 @@ ArrayBuffer对象用来表示通用的、固定长度的原始二进制数据缓
 - Uint32Array：32位无符号整数，长度4个字节。
 - Float32Array：32位浮点数，长度4个字节。
 - Float64Array：64位浮点数，长度8个字节。
+
+Blob与ArrayBuffer的区别是除了，原始字节以外它还提供了mime type作为元数据，Blob和ArrayBuffer之间可以进行转换。
+
+>Tips: File对象其实继承自Blob对象，并提供了提供了name ， lastModifiedDate， size ，type 等基础元数据。
 
 创建Blob对象并转换成ArrayBuffer：
 
@@ -76,11 +80,11 @@ video标签，audio标签还是img标签的src属性，不管是相对路径，�
 const objectURL = URL.createObjectURL(object); //blob:http://localhost:1234/abcedfgh-1234-1234-1234-abcdefghijkl
 ```
 
-这里的object是用于创建URL的File对象、Blob 对象或者 MediaSource 对象，生成的链接就是以blob:开头的一段地址，表示指向的是一个Blob对象。
+这里的object参数是用于创建URL的File对象、Blob 对象或者 MediaSource 对象，生成的链接就是以blob:开头的一段地址，表示指向的是一个二进制数据。
 
-其中localhost:1234是当前网页的主机名称和端口号，也就是location.host，而且这个blob地址是可以直接访问的。需要注意的是，即使是同样的二进制数据，每调用一次URL.createObjectURL方法，就会得到一个不一样的blob地址。这个URL的存在时间，等同于网页的存在时间，一旦网页刷新或卸载，这个blob地址就失效。
+其中localhost:1234是当前网页的主机名称和端口号，也就是location.host，而且这个Blob URL是可以直接访问的。需要注意的是，即使是同样的二进制数据，每调用一次URL.createObjectURL方法，就会得到一个不一样的Blob URL。这个URL的存在时间，等同于网页的存在时间，一旦网页刷新或卸载，这个Blob URL就失效。
 
->Tips: 如果是以文件协议打开的html文件（即url为file://开头），则地址中http://localhost:1234会变成null，而且此时这个blob地址是无法直接访问的。
+>Tips: 如果是以文件协议打开的html文件（即url为file://开头），则地址中http://localhost:1234会变成null，而且此时这个Blob URL是无法直接访问的。
 
 ## 实战一：上传图片预览
 
@@ -104,11 +108,11 @@ upload.onchange = function() {
 };
 ```
 
-这样一个图片上传预览就实现了，是不是非常简单，同样的这个方法也适用于上传视频的预览。
+这样一个图片上传预览就实现了，同样这个方法也适用于上传视频的预览。
 
-## 实战二：以blob地址加载网络视频
+## 实战二：以Blob URL加载网络视频
 
-现在我们有一个网络视频的地址，怎么能将这个视频地址变成blob形式呢，思路肯定是先要拿到存储这个视频原始数据的Blob对象，但是不同于input上传可以直接拿到File对象，我们只有一个网络地址。
+现在我们有一个网络视频的地址，怎么能将这个视频地址变成Blob URL是形式呢，思路肯定是先要拿到存储这个视频原始数据的Blob对象，但是不同于input上传可以直接拿到File对象，我们只有一个网络地址。
 
 我们知道平时请求接口我们可以使用xhr（jquery里的ajax和axios就是封装的这个）或fetch，请求一个服务端地址可以返回我们相应的数据，那如果我们用xhr或者fetch去请求一个图片或视频地址会返回什么呢？当然是返回图片和视频的数据，只不过要设置正确responseType才能拿到我们想要的格式数据。
 
@@ -116,7 +120,7 @@ upload.onchange = function() {
 function ajax(url, cb) {
   const xhr = new XMLHttpRequest();
   xhr.open("get", url);
-  xhr.responseType = "blob"; // ""|"text"-字符串（所以我们会拿到一堆乱码字符串） "blob"-Blob对象 "arraybuffer"-ArrayBuffer对象
+  xhr.responseType = "blob"; // ""|"text"-字符串 "blob"-Blob对象 "arraybuffer"-ArrayBuffer对象
   xhr.onload = function() {
     cb(xhr.response);
   };
@@ -127,7 +131,7 @@ function ajax(url, cb) {
 >Tips: 注意XMLHttpRequest和Fetch API请求会有跨域问题，可以通过跨域资源共享(CORS)解决。
 
 
-看到responseType可以设置blob和arraybuffer我们应该就有谱了，请求直接返回一个Blob对象或者返回ArrayBuffer对象后转换成blob，然后通过createObjectURL生成地址赋值给视频的src属性就可以了,这里我们直接请求一个Blob对象。
+看到responseType可以设置blob和arraybuffer我们应该就有谱了，请求返回一个Blob对象，或者返回ArrayBuffer对象转换成Blob对象，然后通过createObjectURL生成地址赋值给视频的src属性就可以了,这里我们直接请求一个Blob对象。
 
 ```javascript
 ajax('video.mp4', function(res){
@@ -136,7 +140,9 @@ ajax('video.mp4', function(res){
 })
 ```
 
-用调试工具查看视频标签的src属性已经变成一个blob地址，表面上看已经和各大视频网站一样了，但是考虑一个问题，这种形式要等到请求完全部视频数据才能播放，小视频还好说，要是视频资源大一点岂不爆炸，显然各大视频网站不可能这么干。
+用调试工具查看视频标签的src属性已经变成一个Blob URL，表面上看起来是不是和各大视频网站形式一致了，但是考虑一个问题，这种形式要等到请求完全部视频数据才能播放，小视频还好说，要是视频资源大一点岂不爆炸，显然各大视频网站不可能这么干。
+
+解决这个问题的方法就是流媒体，其带给我们最直观体验就是使媒体文件可以边下边播（像我这样的90后男性最早体会到流媒体好处的应该是源于那款快子头的播放器），web端如果要使用流媒体，有多个流媒体协议可以供我们选择。
 
 ## HLS和MPEG DASH
 
@@ -160,17 +166,17 @@ Youtube，B站都是用的这个方案。这个方案索引文件通常是mpd文
 
 ## MediaSource
 
-video标签src指向一个视频地址，视频播完了再将src修改为下一段的视频地址然后播放，这显然不符合我们无缝播放的要求。其实有了我们前面Blob URL的学习，我们可能就会想到一个思路，用Blob URL指向一个视频二进制数据，然后不断将下一段视频的二进制数据添加拼接进去。这样就可以在不影响播放的情况下，不断的更新视频内容并播放下去，想想是不是有点流媒体的意思出来了。
+video标签src指向一个视频地址，视频播完了再将src修改为下一段的视频地址然后播放，这显然不符合我们无缝播放的要求。其实有了我们前面Blob URL的学习，我们可能就会想到一个思路，用Blob URL指向一个视频二进制数据，然后不断将下一段视频的二进制数据添加拼接进去。这样就可以在不影响播放的情况下，不断的更新视频内容并播放下去，想想是不是有点流的意思出来了。
 
-要实现这个功能我们要通过MediaSource来实现，MediaSource接口功能也很纯粹，作为一个媒体数据容器和可以和HTMLMediaElement进行绑定，基本流程就是通过URL.createObjectURL创建容器的BLob URL，设置到video标签的src上，在播放过程中，我们仍然可以通过MediaSource.appendBuffer方法往容器里添加数据，达到更新视频内容的目的。
+要实现这个功能我们要通过MediaSource来实现，MediaSource接口功能也很纯粹，作为一个媒体数据容器可以和HTMLMediaElement进行绑定。基本流程就是通过URL.createObjectURL创建容器的BLob URL，设置到video标签的src上，在播放过程中，我们仍然可以通过MediaSource.appendBuffer方法往容器里添加数据，达到更新视频内容的目的。
 
 实现代码如下：
 
 ```javascript
 const video = document.querySelector('video');
-//视频资源存放路径，假设下面有5个分段视频 video1.mp4 ~ video5.mp4，第一个初始化为init.mp4
+//视频资源存放路径，假设下面有5个分段视频 video1.mp4 ~ video5.mp4，第一个段为初始化视频init.mp4
 const assetURL = "http://www.demo.com";
-//视频格式和编码信息，主要为判断浏览器是否支持，但如果信息和视频不符可能会报错
+//视频格式和编码信息，主要为判断浏览器是否支持视频格式，但如果信息和视频不符可能会报错
 const mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'; 
 if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
   const mediaSource = new MediaSource();
@@ -213,9 +219,9 @@ function sourceOpen () {
 
 ```
 
-这段代码修改自MDN的[MediaSource](https://developer.mozilla.org/zh-CN/docs/Web/API/MediaSource#Browser_compatibility)词条中示例代码，原例子中只有加载一段视频，我修改为了多段视频，由于时间仓促，可能代码有些面条有些难看，就当是为了方便我们看逻辑。
+这段代码修改自MDN的[MediaSource](https://developer.mozilla.org/zh-CN/docs/Web/API/MediaSource#Browser_compatibility)词条中的示例代码，原例子中只有加载一段视频，我修改为了多段视频，代码里面很多地方还可以优化精简，这里没做就当是为了方便我们看逻辑。
 
-此时我们已经基本实现了一个简易的流媒体播放功能，如果愿意可以再加入m3u8或mpd文件的解析，封装一下，就可以实现一个流媒体播放器了。
+此时我们已经基本实现了一个简易的流媒体播放功能，如果愿意可以再加入m3u8或mpd文件的解析，设计一下UI界面，就可以实现一个流媒体播放器了。
 
 最后提一下一个坑，很多人跑了MDN的MediaSource示例代码，可能会发现使用官方提供的视频是没问题的，但是用了自己的mp4视频就会报错，这是因为fmp4文件扩展名通常为.m4s或直接用.mp4，但却是特殊的mp4文件。
 
