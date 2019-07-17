@@ -102,7 +102,7 @@ showAge(); //18
 ### webpack
 
 有人会问 webpack 和它们是什么关系，这里总结一下。
-CommonJS，AMD，CMD，ES Modules 都是规范，RequireJs，SeaJS 是分别基于 AMD 和 CMD 的前端模块化具体实现，是一种在线模块编译方案，引入这两个库后，就可以按照规范进行模块化开发。而 webpack 是一个打包工具，它是一种预编译模块方案，不管是上面哪种规范它都能够识别，并编译打包成浏览器认识的 js 文件，以实现模块化开。可能还有人听过 UMD，UMD 是 AMD 和 CommonJS 的糅合，解决跨平台的问题，具体就是它会判断是否支持 Node.js 的模块（exports 是否存在），存在则使用 Node.js 模块模式。
+CommonJS，AMD，CMD，ES Modules 都是规范，RequireJs，SeaJS 是分别基于 AMD 和 CMD 的前端模块化具体实现，是一种在线模块编译方案，引入这两个库后，就可以按照规范进行模块化开发。而 webpack 是一个打包工具，它是一种预编译模块方案，不管是上面哪种规范它都能够识别，并编译打包成浏览器认识的 js 文件，以实现模块化开发。可能还有人听过 UMD，UMD 是 AMD 和 CommonJS 的糅合，解决跨平台的问题，具体就是它会判断是否支持 Node.js 的模块（exports 是否存在），存在则使用 Node.js 模块模式。
 再判断是否支持 AMD（define 是否存在），存在则使用 AMD 方式加载模块，这种规范 webpack 也是能够识别的。
 
 ## 2.NPM
