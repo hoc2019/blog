@@ -38,7 +38,7 @@ CDN服务阿里，腾讯，华为大厂都有在做，还有一些比如网宿�
 
 ```html 
  <!-- html -->
- <!-- 绝对路径以/开头 -->
+ <!-- 绝对路径以一个/开头，两个通常是省略协议，表示http和https同时支持 -->
  <link href="/style.css" rel="stylesheet" /> 
 ```
 绝对路径引入的资源跟当前页面的路径无关，就是从根路径开始，不管你html的访问地址是`www.demo.com`还是`www.demo.com/login`，上面绝对路径引入的css网络请求都是`www.demo.com/style.css`。  
@@ -47,7 +47,7 @@ CDN服务阿里，腾讯，华为大厂都有在做，还有一些比如网宿�
 通常不建议网页中使用相对路径引入资源，尤其是现在很多SPA应用都是前端控制路由，相对路径可能会造成很多混乱和麻烦。平时项目开发时可以用相对路径，然后用webpack这样的打包工具通过配置公共路径publicPath，打包时把相对路径替换为绝对路径。vue和react官方脚手架创建的项目，webpack.config默认的公共路径就是`/`，最后打包后的文件中所有的资源路径都是以`/`开头的绝对路径。
 
 ### 公共路径
-webpack中的一个配置项publicPath就是我们通常说的公共路径，是项目打包后资源的基础路径，也可以理解为前缀。通常情况下设置为`/`，表示当前访问域名，这样是没有问题的。但是有的时候，我们会将js，css，图片等静态资源存放另一台服务器上。比如我html放在`www.demo.com`上，但其它资源却放在`oss.demo.com`上。这个时候访问`www.demo.com`，`/style.css`网路请求地址`www.demo.com/style.css`显然是找不到资源的。这时我们就可以通过设置publicPath为`oss.demo.com`，将公共路径指向其他服务器，从而在`www.demo.com`的页面中请求到`oss.demo.com`上的资源，说白了就是直接使用一个资源的网络地址。
+webpack中的一个配置项publicPath叫做公共路径，是项目打包后资源的基础路径，也可以理解为前缀。通常情况下设置为`/`，表示当前访问域名。有的时候，我们会将js，css，图片等静态资源存放另一台服务器上。比如我html放在`www.demo.com`上，但其它资源却放在`oss.demo.com`上。这个时候访问`www.demo.com`，`/style.css`网路请求地址`www.demo.com/style.css`显然是找不到资源的。这时我们就可以通过设置publicPath为`oss.demo.com`，从而在`www.demo.com`的页面中请求到`oss.demo.com`上的资源，说白了就是直接使用一个资源的网络地址。
 
 现在想一下为什么前面说html文件和引入的静态资源放在一起切换CDN这事就简单。很明显，放在一起使用绝对路径，静态资源是跟着访问地址的。以`cdn1.demo.com`访问到html，html中的资源请求就都是`cdn1.demo.com`，你换个`cdn2.demo.com`那资源请求就是`cdn2.demo.com`，相当于自动切换，根本不用我们做什么。但是当我们静态资源和html在不同的服务器，html中的地址就是一个写死的网络地址比如`oss.demo.com/style.css`，你不管是从哪个CDN地址访问到html，css的请求永远都是`oss.demo.com/style.css`。
 ____
