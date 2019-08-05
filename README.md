@@ -7,3 +7,4 @@
 - [是时候开发你自己的vscode扩展了](https://github.com/hoc2019/blog/blob/master/article/%E6%98%AF%E6%97%B6%E5%80%99%E5%BC%80%E5%8F%91%E4%BD%A0%E8%87%AA%E5%B7%B1%E7%9A%84vscode%E6%89%A9%E5%B1%95%E4%BA%86.md)  by wangzy
 - [babel使用指南](https://github.com/hoc2019/blog/blob/master/article/babel%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md)  by wangzy
 - [前端工作学习相关网站收集整理](https://github.com/hoc2019/blog/blob/master/article/%E5%89%8D%E7%AB%AF%E5%B7%A5%E4%BD%9C%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%BD%91%E7%AB%99%E6%94%B6%E9%9B%86%E6%95%B4%E7%90%86.md)  by wangzy
+- [玩转VS Code](https://github.com/hoc2019/blog/blob/master/article/VScode.md) by lixf
